@@ -1,0 +1,52 @@
+services:
+  django:
+    image: poll-app:v3
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+
+      update_config:
+        parallelism: 1
+        delay: 10s
+
+      rollback_config:
+        parallelism: 1
+
+      placement:
+        constraints:
+          - node.role == manager
+
+    networks:
+      - backend
+
+    volumes:
+      - static_data:/app/static
+
+  
+  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_PASSWORD: ${DBPASSWORD}
+      POSTGRES_USER: ${DBUSER}
+      POSTGRES_DB: ${DBNAME}
+    
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: overlay
+
+
+volumes:
+  postgres_data:
+  static_data:
