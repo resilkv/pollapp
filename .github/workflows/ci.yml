@@ -89,7 +89,7 @@ jobs:
               -e DBPASSWORD \
               -e DBHOST \
               -e DBPORT \
-              pollapp:c1
+              pollapp:ci
       - name : Check Container
         run: |
             docker ps
