@@ -68,3 +68,7 @@ jobs:
           DBPORT: 5432
         run: |
           python manage.py test
+        
+      - name: Build Docker Image
+        run: |
+            docker build -t pollapp:ci .
