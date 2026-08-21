@@ -72,7 +72,7 @@ jobs:
       - name: Build Docker Image
         run: |
             docker build -t pollapp:ci .
-      - name: Run Django COntainer
+      - name: Run Django Container
         env:
           DBNAME: test_db
           DBUSER: resil
@@ -88,7 +88,7 @@ jobs:
               -e DBUSER \
               -e DBPASSWORD \
               -e DBHOST \
-              -e DBPORT
+              -e DBPORT \
               pollapp:c1
       - name : Check Container
         run: |
