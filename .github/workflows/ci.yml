@@ -61,10 +61,10 @@ jobs:
 
       - name: Run tests
         env:
-          DB_NAME: test_db
-          DB_USER: postgres
-          DB_PASSWORD: postgres
-          DB_HOST: localhost
-          DB_PORT: 5432
+          DBNAME: test_db
+          DBUSER: postgres
+          DBPASSWORD: postgres
+          DBHOST: localhost
+          DBPORT: 5432
         run: |
           python manage.py test
