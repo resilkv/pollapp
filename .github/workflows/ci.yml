@@ -72,3 +72,28 @@ jobs:
       - name: Build Docker Image
         run: |
             docker build -t pollapp:ci .
+      - name: Run Django COntainer
+        env:
+          DBNAME: test_db
+          DBUSER: resil
+          DBPASSWORD: password
+          DBHOST: localhost
+          DBPORT: 5432
+        run: |
+            docker run \
+              --network host \
+              -d \
+              --name pollapp \
+              -e DBNAME \
+              -e DBUSER \
+              -e DBPASSWORD \
+              -e DBHOST \
+              -e DBPORT
+              pollapp:c1
+      - name : Check Container
+        run: |
+            docker ps
+
+      - name: Show Django container logs
+        run: |
+            docker logs pollapp
