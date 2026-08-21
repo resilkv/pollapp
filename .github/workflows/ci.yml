@@ -62,8 +62,8 @@ jobs:
       - name: Run tests
         env:
           DBNAME: test_db
-          DBUSER: postgres
-          DBPASSWORD: postgres
+          DBUSER: resil
+          DBPASSWORD: password
           DBHOST: localhost
           DBPORT: 5432
         run: |
