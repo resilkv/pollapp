@@ -38,9 +38,9 @@ jobs:
             -d \
             --name postgres \
             --network pollapp-network \
-            -e POSTGRES_DB=test_db
-            -e POSTGRES_user=postgres
-            -e POSTGRES_PASSWORD=password
+            -e POSTGRES_DB=test_db \
+            -e POSTGRES_user=postgres \
+            -e POSTGRES_PASSWORD=password \
             postgres:18
       
       - name: Wait for the postgres
