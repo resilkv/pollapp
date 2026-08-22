@@ -4,7 +4,7 @@ set -e #stop if anything fails
 
 echo "Waiting for database..."
 
-PGHOST="${POSTGRES_HOST:-host.docker.internal}"
+PGHOST="${POSTGRES_HOST:-localhost}"
 PGPORT="${POSTGRES_PORT:-5432}"
 PGUSER="${POSTGRES_USER:-resil}"
 
