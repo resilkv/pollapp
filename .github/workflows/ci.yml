@@ -8,6 +8,10 @@ on:
   pull_request:  # run CI when somebody creates/updates a pull request targeting main
     branches:
       - master
+  
+permissions:
+  contents: read
+  packages: write
 
 jobs:
   test:
@@ -44,18 +48,22 @@ jobs:
             -p 5432:5432 \
             postgres:16
       
-      - name: Wait for the postgres
+      - name: Wait for PostgreSQL
         run: |
           for i in {1..30}; do
             if docker exec postgres pg_isready -U resil -d test_db; then
               echo "DB is Ready"
-              break
+              exit 0
             fi
 
-            echo "Waiting for DB"
+            echo "Waiting for DB..."
             sleep 2
           done
-      
+
+          echo "PostgreSQL failed to become ready"
+          docker logs postgres
+          exit 1
+            
       - name: Run django checks
         env:
           DBNAME: test_db
@@ -80,7 +88,9 @@ jobs:
         
       - name: Build Docker Image
         run: |
-            docker build -t pollapp:ci .
+            docker build \
+              -t ghcr.io/${{github.repository}}:${{ github.sha }} .
+
       - name: Run Django Container
         env:
           DBNAME: test_db
@@ -99,7 +109,7 @@ jobs:
             -e DBPASSWORD \
             -e DBHOST \
             -e DBPORT \
-            pollapp:ci
+            ghcr.io/${{ github.repository }}:${{ github.sha }}
 
       - name: Debug Django environment
         run: |
@@ -130,3 +140,20 @@ jobs:
         if: always()
         run: |
           docker logs postgres
+      
+      - name: Login to GHCR
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{github.actor}}
+          password: ${{secrets.GITHUB_TOKEN}}
+      
+      - name: Push Docker Image
+        if: github.event_name == 'push'
+        run: |
+          docker push \
+            ghcr.io/${{github.repository}}:${{ github.sha }}
+      
+      
+      
