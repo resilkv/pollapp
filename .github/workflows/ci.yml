@@ -100,6 +100,7 @@ jobs:
               -e DBHOST \
               -e DBPORT \
               pollapp:ci
+              manage.py migrate --noinput
 
       - name: Debug Django environment
         run: |
