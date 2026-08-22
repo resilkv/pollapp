@@ -86,7 +86,7 @@ jobs:
           DBNAME: test_db
           DBUSER: resil
           DBPASSWORD: password
-          DBHOST: localhost
+          DBHOST: postgres
           DBPORT: 5432
         run: |
             docker run \
