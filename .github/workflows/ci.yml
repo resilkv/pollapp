@@ -42,17 +42,17 @@ jobs:
             -e POSTGRES_USER=resil \
             -e POSTGRES_PASSWORD=password \
             -p 5432:5432 \
-            postgres:18
+            postgres:16
       
       - name: Wait for the postgres
         run: |
           for i in {1..30}; do
-            if docker exec postgres pg_isready -U postgres -d test_db; then
+            if docker exec postgres pg_isready -U resil -d test_db; then
               echo "DB is Ready"
               break
             fi
 
-            echo "Wiating for DB"
+            echo "Waiting for DB"
             sleep 2
           done
       
@@ -89,18 +89,17 @@ jobs:
           DBHOST: postgres
           DBPORT: 5432
         run: |
-            docker run \
-              -d \
-               --name pollapp \
-              --network pollapp-network \
-              -p 8000:8000 \
-              -e DBNAME \
-              -e DBUSER \
-              -e DBPASSWORD \
-              -e DBHOST \
-              -e DBPORT \
-              pollapp:ci
-              manage.py migrate --noinput
+          docker run \
+            -d \
+            --name pollapp \
+            --network pollapp-network \
+            -p 8000:8000 \
+            -e DBNAME \
+            -e DBUSER \
+            -e DBPASSWORD \
+            -e DBHOST \
+            -e DBPORT \
+            pollapp:ci
 
       - name: Debug Django environment
         run: |
@@ -116,7 +115,15 @@ jobs:
       
       - name: Health Check
         run: |
-          curl --fail http://localhost:8000/
+          for i in {1..30}; do
+            if curl --fail http://localhost:8000/polls/; then
+              echo "App is ready and healthy"
+              exit 0
+            fi
+            echo "Waiting for app..."
+            sleep 2
+          done
+          exit 1
       
       - name: Check Postgres
         if: failure()
