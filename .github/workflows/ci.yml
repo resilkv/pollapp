@@ -38,8 +38,8 @@ jobs:
             -d \
             --name postgres \
             --network pollapp-network \
-            -e POSTGRES_DB=test_db \
-            -e POSTGRES_user=postgres \
+            -e POSTGRES_DB=resil \
+            -e POSTGRES_USER=postgres \
             -e POSTGRES_PASSWORD=password \
             postgres:18
       
