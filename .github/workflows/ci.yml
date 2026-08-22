@@ -13,25 +13,6 @@ jobs:
   test:
 
     runs-on: ubuntu-latest #runner
-
-    services:
-        postgres:
-            image: postgres:18
-
-            env:
-              POSTGRES_DB: test_db
-              POSTGRES_USER: resil
-              POSTGRES_PASSWORD: password
-            
-            ports:
-              - 5432:5432
-            
-            options: >-
-                --health-cmd="pg_isready -U postgres -d test_db"
-                --health-interval=10s
-                --health-timeout=5s
-                --health-retries=5
-
     steps:
 
       - name: Checkout code
@@ -46,6 +27,33 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+      
+      - name: Create a Docker Network
+        run: |
+          docker network create poll-app-network
+      
+      - name: Start the Postgres
+        run: |
+          docker run \
+            -d \
+            --name postgres \
+            --network pollapp-network \
+            -e POSTGRES_DB=test_db
+            -e POSTGRES_user=postgres
+            -e POSTGRES_PASSWORD=password
+            postgres:18
+      
+      - name: Wait for the postgres
+        run: |
+          for i in {1..30}; do
+            if docker exec postgres pg_isready -U postgres -d test_db; then
+              echo "DB is Ready"
+              break
+            fi
+
+            echo "Wiating for DB"
+            sleep 2
+          done
       
       - name: Run django checks
         env:
@@ -81,9 +89,10 @@ jobs:
           DBPORT: 5432
         run: |
             docker run \
-              --network host \
               -d \
-              --name pollapp \
+               --name pollapp \
+              --network pollapp-network \
+              -p 8000:8000 \
               -e DBNAME \
               -e DBUSER \
               -e DBPASSWORD \
@@ -97,3 +106,12 @@ jobs:
       - name: Show Django container logs
         run: |
             docker logs pollapp
+      
+      - name: Health Check
+        run: |
+          curl --fail http://localhost:8000/
+      
+      - name: Check Postgres
+        if: failure()
+        run: |
+          docker logs postgres
