@@ -4,13 +4,9 @@ set -e #stop if anything fails
 
 echo "Waiting for database..."
 
-PGHOST="${POSTGRES_HOST:-localhost}"
-PGPORT="${POSTGRES_PORT:-5432}"
-PGUSER="${POSTGRES_USER:-resil}"
-
-until pg_isready -h "$PGHOST" -p "$PGPORT" -U "$PGUSER"; do
-  echo "Postgres is unavailable - sleeping"
-  sleep 1
+while ! pg_isready -h localhost -p 5432; do
+    echo "Postgres is unavailable - sleeping"
+    sleep 1
 done
 
 python manage.py migrate
