@@ -30,7 +30,7 @@ jobs:
       
       - name: Create a Docker Network
         run: |
-          docker network create poll-app-network
+          docker network create pollapp-network
       
       - name: Start the Postgres
         run: |
