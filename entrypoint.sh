@@ -19,7 +19,7 @@ echo "Postgres is ready!"
 
 echo "Running migrations..."
 
-python manage.py migrate
+timeout 30 python manage.py migrate --noinput
 
 echo "Migrations completed!"
 
