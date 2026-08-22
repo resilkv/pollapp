@@ -94,12 +94,17 @@ jobs:
                --name pollapp \
               --network pollapp-network \
               -p 8000:8000 \
-              -e DBNAME \
-              -e DBUSER \
-              -e DBPASSWORD \
-              -e DBHOST \
-              -e DBPORT \
+              -e DBNAME=test_db \
+              -e DBUSER=resil \
+              -e DBPASSWORD=password \
+              -e DBHOST=postgres \
+              -e DBPORT=5432 \
               pollapp:ci
+              
+      - name: Debug Django environment
+        run: |
+          docker exec pollapp env | grep '^DB'
+
       - name : Check Container
         run: |
             docker ps
