@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Pod
+
+metadata:
+  name: pollapp
+
+spec:
+  containers:
+    - name: pollapp
+      image: pollapp:k8s
+      imagePullPolicy: Never #Don't try to download pollapp:k8s; use the image already loaded into the Kind node.
+
+      ports:
+        - containerPort: 8000
+      
+      env:
+        - name: DBNAME
+          value: "test_db"
+        
+        - name: DBUSER
+          value: "resil"
+        
+        - name: DBPASSWORD
+          value: "password"
+
+        - name: DBHOST
+          value: "postgres"
+
+        - name: DBPORT
+          value: "5432"
