@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: pollapp
+
+spec:
+  replicas: 3
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+
+
+  selector:
+    matchLabels:
+      app: pollapp
+    
+  template:
+    metadata:
+      labels:
+        app: pollapp
+    
+    spec:
+      containers:
+        - name: pollapp
+          image: floci-ecr-registry:5000/pollapp:k8s
+          imagePullPolicy: IfNotPresent
+        
+          ports:
+            - containerPort: 8000
+          
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          
+          env:
+            - name: DBNAME
+              value: "test_db"
+
+            - name: DBUSER
+              value: "resil"
+
+            - name: DBPASSWORD
+              value: "password"
+
+            - name: DBHOST
+              value: "postgres"
+
+            - name: DBPORT
+              value: "5432" 

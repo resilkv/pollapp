@@ -3,28 +3,51 @@ kind: Pod
 
 metadata:
   name: pollapp
+  
 
 spec:
   containers:
     - name: pollapp
       image: pollapp:k8s
-      imagePullPolicy: Never #Don't try to download pollapp:k8s; use the image already loaded into the Kind node.
+      imagePullPolicy: Never # Don't try to download pollapp:k8s; use the image already loaded into the Kind node.
 
       ports:
         - containerPort: 8000
+
+      envFrom:
+        - configMapRef:
+            name: poll-app-config
+        
+        - secretRef:
+            name: pollapp-secret
+
+      readinessProbe:
+        httpGet:
+          path: /health/
+          port: 8000
+        initialDelaySeconds: 5
+        periodSeconds: 10
       
-      env:
-        - name: DBNAME
-          value: "test_db"
-        
-        - name: DBUSER
-          value: "resil"
-        
-        - name: DBPASSWORD
-          value: "password"
+      livenessProbe:
+        httpGet:
+          path: /health/
+          port: 8000
 
-        - name: DBHOST
-          value: "postgres"
+        initialDelaySeconds: 5
+        periodSeconds: 10
+      
+      # env:
+      #   - name: DBNAME
+      #     value: "test_db"
+        
+      #   - name: DBUSER
+      #     value: "resil"
+        
+      #   - name: DBPASSWORD
+      #     value: "password"
 
-        - name: DBPORT
-          value: "5432"
+      #   - name: DBHOST
+      #     value: "postgres"
+
+      #   - name: DBPORT
+      #     value: "5432"

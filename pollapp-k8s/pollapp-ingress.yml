@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+
+metadata:
+  name: pollapp-ingress
+
+spec:
+  ingressClassName: nginx
+
+  rules:
+    - host: pollapp.local
+
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+
+            backend:
+              service:
+                name: pollapp
+                port:
+                  number: 8000

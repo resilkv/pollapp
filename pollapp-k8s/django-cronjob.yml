@@ -1,0 +1,42 @@
+apiVersion: batch/v1
+kind: CronJob
+
+metadata:
+  name: django-cleanup
+
+spec:
+  schedule: "0 2 * * *"
+
+  jobTemplate:
+
+    spec:
+      template:
+
+        spec:
+          restartPolicy: Never
+
+          containers:
+            - name: cleanup
+              image: pollapp:k8s
+              imagePullPolicy: Never
+
+              command:
+                - python
+                - manage.py
+                - cleanup_old_data
+
+              env:
+                - name: DBNAME
+                  value: "test_db"
+
+                - name: DBUSER
+                  value: "resil"
+
+                - name: DBPASSWORD
+                  value: "password"
+
+                - name: DBHOST
+                  value: "postgres"
+
+                - name: DBPORT
+                  value: "5432"

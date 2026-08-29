@@ -1,0 +1,42 @@
+apiVersion: batch/v1
+kind: Job
+
+metadata:
+  name: django-migrate
+
+spec:
+  template:
+
+    metadata:
+      labels:
+        app: django-migrate
+
+    spec:
+      restartPolicy: Never
+
+      containers:
+        - name: migrate
+          image: pollapp:k8s
+          imagePullPolicy: Never
+
+          command:
+            - python
+            - manage.py
+            - migrate
+            - --noinput
+
+          env:
+            - name: DBNAME
+              value: "test_db"
+
+            - name: DBUSER
+              value: "resil"
+
+            - name: DBPASSWORD
+              value: "password"
+
+            - name: DBHOST
+              value: "postgres"
+
+            - name: DBPORT
+              value: "5432"
