@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: pollapp-config
+
+data:
+  DBNAME: "test_db"
+  DBUSER: "resil"
+  DBHOST: "postgres"
+  DBPORT: "5432"

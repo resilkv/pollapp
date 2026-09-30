@@ -13,46 +13,63 @@ spec:
       maxUnavailable: 1
       maxSurge: 1
 
-
   selector:
     matchLabels:
       app: pollapp
-    
+
   template:
     metadata:
       labels:
         app: pollapp
-    
+
     spec:
+      imagePullSecrets:
+        - name: ecr-secret
+
       containers:
         - name: pollapp
           image: floci-ecr-registry:5000/pollapp:k8s
           imagePullPolicy: IfNotPresent
-        
+
           ports:
             - containerPort: 8000
-          
+
           resources:
             requests:
               cpu: "100m"
               memory: "128Mi"
-            
+
             limits:
               cpu: "500m"
               memory: "512Mi"
-          
+
           env:
             - name: DBNAME
-              value: "test_db"
+              valueFrom:
+                configMapKeyRef:
+                  name: pollapp-config
+                  key: DBNAME
 
             - name: DBUSER
-              value: "resil"
-
-            - name: DBPASSWORD
-              value: "password"
+              valueFrom:
+                configMapKeyRef:
+                  name: pollapp-config
+                  key: DBUSER
 
             - name: DBHOST
-              value: "postgres"
+              valueFrom:
+                configMapKeyRef:
+                  name: pollapp-config
+                  key: DBHOST
 
             - name: DBPORT
-              value: "5432" 
+              valueFrom:
+                configMapKeyRef:
+                  name: pollapp-config
+                  key: DBPORT
+
+            - name: DBPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pollapp-secret
+                  key: DBPASSWORD
